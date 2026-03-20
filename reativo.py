@@ -12,8 +12,13 @@
 # ainda dá pra melhorar mas é melhor do que se fosse
 # aleatório
 
+#5 ) Sim, ele escapa porém se tiver parede ou obstáculo no caminho
+# ele fica preso na parede
 
-
+#6 ) essa fuga é melhor em partes, pois na que eu tinha feito
+# ela não ficava congelado depois de correr da bomba, nesse
+# novo ele fica congelado, mas foge de mais possiveis bombas
+# e ele n considera os obstáculos
 import random
 
 class Agent:
@@ -37,15 +42,40 @@ class Agent:
         oponentes = game_state.opponents(player_state.id)
         hx, hy = oponentes[0]
         d = abs(ax - hx) + abs(ay - hy)
+        #atv 4/6 Se tiver bomba adjacente, sair
 
+        for bomba in game_state.bombs:
+            bx = bomba[0]
+            by = bomba[1]
+            db = abs(ax - bx) + abs(ay - by)
 
+            if db <= 3:
+                if bx > ax:
+                    return 'l'     
+                if bx < ax:
+                    return 'r'     
+                if by > ay:
+                    return 'd'     
+                if by < ay:
+                    return 'u'     
 
-        #atv 4 Se tiver bomba adjacente, sair
-        if c == 'b' or d == 'b' or b == 'b' or e == 'b':
-            if c == 'b' or b == 'b':
-                return random.choice(['l', 'r'])
-            if e == 'b' or d == 'b':
-                return random.choice(['u', 'd'])
+        # if c == 'b' or d == 'b' or b == 'b' or e == 'b':
+        #     if c == 'b' or b == 'b':
+        #         return random.choice(['l', 'r'])
+        #     if e == 'b' or d == 'b':
+        #         return random.choice(['u', 'd'])
+
+        #atv 5 Se tiver sem bomba, fugir do inimigo
+        if (d < 4) and ammo == 0:
+            if (hx == ax+1 or hx == ax+2 or hx == ax+3):
+                return 'l'
+            if (hx == ax-1 or hx == ax-2 or hx == ax-3):
+                return 'r'
+            if (hy == ay+1 or hy == ay+2 or hy == ay+3):
+                return 'd'
+            if (hy == ay-1 or hy == ay-2 or hy == ay-3):
+                return 'u'
+            
 
         # Regra 1: se oponente adjacente então jogar bomba
         # 1 é player
