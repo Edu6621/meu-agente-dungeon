@@ -33,6 +33,7 @@ class Agent:
     def __init__(self):
         pass
 
+
     def run_bomb(self, game_state, ax, ay):
         for bomba in game_state.bombs:
             bx = bomba[0]
@@ -78,8 +79,15 @@ class Agent:
                     else: return 'u' 
         else: return None    
 
-    def no_ammo_run(self, game_state, ax, ay, hx, hy, d, ammo):
-        if (d < 4) and ammo == 0:
+    def explode_block(self, player_state, bombas, c, d, b, e, ammo, bloco):
+        if (c == bloco or d == bloco or b == bloco or e == bloco) and ammo > 0:
+            if player_state.location in bombas:
+                return random.choice(['u', 'd', 'l', 'r'])
+            print("Explodir ", bloco)
+            return 'p'
+        
+    def no_ammo_run(self, game_state, ax, ay, hx, hy, dis, ammo):
+        if (dis < 4) and ammo == 0:
             if (hx == ax+1 or hx == ax+2 or hx == ax+3):
                 return 'l'
             if (hx == ax-1 or hx == ax-2 or hx == ax-3):
@@ -106,7 +114,7 @@ class Agent:
 
         oponentes = game_state.opponents(player_state.id)
         hx, hy = oponentes[0]
-        d = abs(ax - hx) + abs(ay - hy)
+        dis = abs(ax - hx) + abs(ay - hy)
 
         # Regra 1: se oponente adjacente então jogar bomba
         # 1 é player
@@ -118,20 +126,25 @@ class Agent:
 
         #Se houver pelo menos um bloco de madeira adjacente e o agente tiver munição, então jogar
         #bomba para explodir.
-        if (c == 'sb' or d == 'sb' or b == 'sb' or e == 'sb') and ammo > 0:
-            if player_state.location in bombas:
-                return random.choice(['u', 'd', 'l', 'r'])
-            print("Explodir madeira")
-            return 'p'
+
+        explodir_madeira = self.explode_block(player_state, bombas, c, d, b, e, ammo, 'sb')
+        if explodir_madeira:
+            return explodir_madeira
+        
+        explodir_minerio = self.explode_block(player_state, bombas, c, d, b, e, ammo, 'ob')
+        if explodir_minerio:
+            return explodir_minerio
+        
+
         #atv 4/6 Se tiver bomba adjacente, sair 
         correr_bomba = self.run_bomb(game_state, ax, ay) 
         if correr_bomba:
             return correr_bomba
         
         #atv 5 Se tiver sem bomba, fugir do inimigo
-        #correr_sem_ammo = self.no_ammo_run(self, game_state, ax, ay, hx, hy, d, ammo)
-        #if correr_sem_ammo:
-        #    return correr_sem_ammo
+        correr_sem_ammo = self.no_ammo_run(game_state, ax, ay, hx, hy, dis, ammo)
+        if correr_sem_ammo:
+            return correr_sem_ammo
 
 
 
