@@ -19,11 +19,56 @@
 # ela não ficava congelado depois de correr da bomba, nesse
 # novo ele fica congelado, mas foge de mais possiveis bombas
 # e ele n considera os obstáculos
+        
+        # if c == 'b' or d == 'b' or b == 'b' or e == 'b':
+        #     if c == 'b' or b == 'b':
+        #         return random.choice(['l', 'r'])
+        #     if e == 'b' or d == 'b':
+        #         return random.choice(['u', 'd'])
+
+
 import random
 
 class Agent:
     def __init__(self):
         pass
+
+    def run_bomb(self, game_state, ax, ay):
+        for bomba in game_state.bombs:
+            bx = bomba[0]
+            by = bomba[1]
+            db = abs(ax - bx) + abs(ay - by)
+
+            if db <= 3:
+                if bx > ax:
+                    if game_state.entity_at((ax-1, ay)) == 'sb' or game_state.entity_at((ax-1, ay)) == 'ob' or game_state.entity_at((ax-1, ay)) == 'ib':
+                        return random.choice(['u', 'd'])
+                    else: return 'l'     
+                if bx < ax:
+                    if game_state.entity_at((ax+1, ay)) == 'sb' or game_state.entity_at((ax+1, ay)) == 'ob' or game_state.entity_at((ax+1, ay)) == 'ib':
+                        return random.choice(['u', 'd'])
+                    else: return 'r'     
+                if by > ay:
+                    if game_state.entity_at((ax, ay-1)) == 'sb' or game_state.entity_at((ax, ay-1)) == 'ob' or game_state.entity_at((ax, ay-1)) == 'ib':
+                        return random.choice(['l', 'r'])
+                    else: return 'd'     
+                if by < ay:
+                    if game_state.entity_at((ax, ay+1)) == 'sb' or game_state.entity_at((ax, ay+1)) == 'ob' or game_state.entity_at((ax, ay+1)) == 'ib':
+                        return random.choice(['l', 'r'])
+                    else: return 'u' 
+        else: return None    
+
+    def no_ammo_run(self, game_state, ax, ay, hx, hy, d, ammo):
+        if (d < 4) and ammo == 0:
+            if (hx == ax+1 or hx == ax+2 or hx == ax+3):
+                return 'l'
+            if (hx == ax-1 or hx == ax-2 or hx == ax-3):
+                return 'r'
+            if (hy == ay+1 or hy == ay+2 or hy == ay+3):
+                return 'd'
+            if (hy == ay-1 or hy == ay-2 or hy == ay-3):
+                return 'u'
+        else: return None    
 
     def next_move(self, game_state, player_state):
 
@@ -42,40 +87,6 @@ class Agent:
         oponentes = game_state.opponents(player_state.id)
         hx, hy = oponentes[0]
         d = abs(ax - hx) + abs(ay - hy)
-        #atv 4/6 Se tiver bomba adjacente, sair
-
-        for bomba in game_state.bombs:
-            bx = bomba[0]
-            by = bomba[1]
-            db = abs(ax - bx) + abs(ay - by)
-
-            if db <= 3:
-                if bx > ax:
-                    return 'l'     
-                if bx < ax:
-                    return 'r'     
-                if by > ay:
-                    return 'd'     
-                if by < ay:
-                    return 'u'     
-
-        # if c == 'b' or d == 'b' or b == 'b' or e == 'b':
-        #     if c == 'b' or b == 'b':
-        #         return random.choice(['l', 'r'])
-        #     if e == 'b' or d == 'b':
-        #         return random.choice(['u', 'd'])
-
-        #atv 5 Se tiver sem bomba, fugir do inimigo
-        if (d < 4) and ammo == 0:
-            if (hx == ax+1 or hx == ax+2 or hx == ax+3):
-                return 'l'
-            if (hx == ax-1 or hx == ax-2 or hx == ax-3):
-                return 'r'
-            if (hy == ay+1 or hy == ay+2 or hy == ay+3):
-                return 'd'
-            if (hy == ay-1 or hy == ay-2 or hy == ay-3):
-                return 'u'
-            
 
         # Regra 1: se oponente adjacente então jogar bomba
         # 1 é player
@@ -92,6 +103,17 @@ class Agent:
                 return random.choice(['u', 'd', 'l', 'r'])
             print("Explodir madeira")
             return 'p'
+        #atv 4/6 Se tiver bomba adjacente, sair 
+        correr_bomba = self.run_bomb(game_state, ax, ay) 
+        if correr_bomba:
+            return correr_bomba
+        
+        #atv 5 Se tiver sem bomba, fugir do inimigo
+        #correr_sem_ammo = self.no_ammo_run(self, game_state, ax, ay, hx, hy, d, ammo)
+        #if correr_sem_ammo:
+        #    return correr_sem_ammo
+
+
 
         # Regra 2: se houver tesouro adjacente então coletar
         if c == 't' or d == 't' or b == 't' or e == 't':
