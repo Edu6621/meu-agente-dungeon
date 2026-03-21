@@ -38,22 +38,42 @@ class Agent:
             bx = bomba[0]
             by = bomba[1]
             db = abs(ax - bx) + abs(ay - by)
-
+            
             if db <= 3:
                 if bx > ax:
-                    if game_state.entity_at((ax-1, ay)) == 'sb' or game_state.entity_at((ax-1, ay)) == 'ob' or game_state.entity_at((ax-1, ay)) == 'ib':
+                    if (
+                        game_state.entity_at((ax-1, ay)) == 'sb' or 
+                        game_state.entity_at((ax-1, ay)) == 'ob' or 
+                        game_state.entity_at((ax-1, ay)) == 'ib' or 
+                        (ax-1) == 0
+                    ):
                         return random.choice(['u', 'd'])
                     else: return 'l'     
                 if bx < ax:
-                    if game_state.entity_at((ax+1, ay)) == 'sb' or game_state.entity_at((ax+1, ay)) == 'ob' or game_state.entity_at((ax+1, ay)) == 'ib':
+                    if (
+                        game_state.entity_at((ax+1, ay)) == 'sb' or
+                        game_state.entity_at((ax+1, ay)) == 'ob' or
+                        game_state.entity_at((ax+1, ay)) == 'ib' or
+                        (ax+1) == 10
+                    ):    
                         return random.choice(['u', 'd'])
                     else: return 'r'     
                 if by > ay:
-                    if game_state.entity_at((ax, ay-1)) == 'sb' or game_state.entity_at((ax, ay-1)) == 'ob' or game_state.entity_at((ax, ay-1)) == 'ib':
+                    if (
+                        game_state.entity_at((ax, ay-1)) == 'sb' or
+                        game_state.entity_at((ax, ay-1)) == 'ob' or
+                        game_state.entity_at((ax, ay-1)) == 'ib' or
+                        (ay-1) == 0
+                    ):    
                         return random.choice(['l', 'r'])
                     else: return 'd'     
                 if by < ay:
-                    if game_state.entity_at((ax, ay+1)) == 'sb' or game_state.entity_at((ax, ay+1)) == 'ob' or game_state.entity_at((ax, ay+1)) == 'ib':
+                    if (
+                        game_state.entity_at((ax, ay+1)) == 'sb' or
+                        game_state.entity_at((ax, ay+1)) == 'ob' or
+                        game_state.entity_at((ax, ay+1)) == 'ib' or
+                        (ay+1) == 10
+                    ):    
                         return random.choice(['l', 'r'])
                     else: return 'u' 
         else: return None    
