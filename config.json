@@ -1,0 +1,6 @@
+{   "headless": true,
+    "interactive": false,
+    "start_paused": false,
+    "max_iterations": 1800,
+    "wait_end": 0,
+    "tick_step": 0.001 }
